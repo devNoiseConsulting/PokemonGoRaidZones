@@ -1,0 +1,23 @@
+{
+  "name": "PokemonGoRaidZones",
+  "version": "1.0.0",
+  "description": "A simple map page to layout the areas for Pokemon Go Raid Zone.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devNoiseConsulting/PokemonGoRaidZones.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devNoiseConsulting/PokemonGoRaidZones/issues"
+  },
+  "homepage": "https://github.com/devNoiseConsulting/PokemonGoRaidZones#readme",
+  "dependencies": {
+    "leaflet": "^1.2.0"
+  }
+}
