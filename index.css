@@ -1,1 +1,9 @@
-#mapid { height: 480px; }
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 90vh;
+}
+
+.box .content {
+  flex: 1 1 auto;
+}
