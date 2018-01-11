@@ -56,6 +56,16 @@ let drawZones = function(zones) {
       .bindPopup(String(zone.text))
       .addTo(mymap);
     geoLayers.addLayer(newLayer);
+
+    // let newLayer2 = L.circle(L.latLng(zone.lat, zone.lng), zone.radius - 1000, {
+    //   opacity: 1,
+    //   weight: 1,
+    //   fillOpacity: 0.25,
+    //   color: zone.color
+    // })
+    //   .bindPopup(String(zone.text))
+    //   .addTo(mymap);
+    // geoLayers.addLayer(newLayer2);
   });
 
   mymap.addLayer(geoLayers);

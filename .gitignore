@@ -59,4 +59,4 @@ typings/
 
 .cache/
 dist/
-config.js
+config*js
