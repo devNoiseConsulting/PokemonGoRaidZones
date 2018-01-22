@@ -1,9 +1,12 @@
 import config from './config';
-
-let geoLayers;
+import knownGyms from './knownGyms';
+let showGyms = false;
 
 let mymap = L.map('mapid', { zoomControl: false });
 new L.Control.Zoom({ position: 'bottomright' }).addTo(mymap);
+
+let zoneLayers = L.layerGroup();
+let gymLayers = L.layerGroup();
 
 function resetMap() {
   mymap.setView(
@@ -32,8 +35,8 @@ L.tileLayer(
 ).addTo(mymap);
 
 let removeZones = function() {
-  if (geoLayers) {
-    mymap.removeLayer(geoLayers);
+  if (zoneLayers) {
+    mymap.removeLayer(zoneLayers);
   }
 };
 
@@ -41,13 +44,15 @@ let zoneSort = function(a, b) {
   return b.radius - a.radius;
 };
 
-let drawZones = function(zones) {
+let drawArea = function(area) {
+  L.rectangle(area, {color: "#000", weight: 1, fillOpacity: 0.1}).addTo(mymap);
+};
+
+let drawZones = function(zones, offset = 0) {
   removeZones();
 
-  geoLayers = L.layerGroup();
-
   zones.sort(zoneSort).forEach(zone => {
-    let newLayer = L.circle(L.latLng(zone.lat, zone.lng), zone.radius, {
+    let newLayer = L.circle(L.latLng(zone.lat, zone.lng), zone.radius + offset, {
       opacity: 1,
       weight: 1,
       fillOpacity: 0.25,
@@ -55,20 +60,55 @@ let drawZones = function(zones) {
     })
       .bindPopup(String(zone.text))
       .addTo(mymap);
-    geoLayers.addLayer(newLayer);
-
-    // let newLayer2 = L.circle(L.latLng(zone.lat, zone.lng), zone.radius - 1000, {
-    //   opacity: 1,
-    //   weight: 1,
-    //   fillOpacity: 0.25,
-    //   color: zone.color
-    // })
-    //   .bindPopup(String(zone.text))
-    //   .addTo(mymap);
-    // geoLayers.addLayer(newLayer2);
+    zoneLayers.addLayer(newLayer);
   });
 
-  mymap.addLayer(geoLayers);
+  mymap.addLayer(zoneLayers);
 };
 
+let removeGyms = function() {
+  if (gymLayers) {
+    mymap.removeLayer(gymLayers);
+  }
+};
+
+let drawGyms = function(gyms) {
+  removeGyms();
+
+
+    var gymIcon = L.icon({
+        iconUrl: './dist/32e9ce835b73c2f75db766cd1a4babff.png',
+        iconSize: [25, 41],
+        iconAnchor: [13, 41],
+        popupAnchor: [0, -26]
+    });
+
+  gyms.forEach(gym => {
+    let newLayer = L.marker([gym.lat, gym.lng], {icon: gymIcon})
+      .bindPopup(String(gym.name));
+    gymLayers.addLayer(newLayer);
+  });
+
+  //mymap.addLayer(gymLayers);
+};
+
+// drawArea(config.area);
 drawZones(config.zones);
+// drawZones(config.zones, -1000);
+drawGyms(knownGyms);
+
+const toggleGyms = function(e) {
+  console.log('toggle gyms');
+  e.preventDefault();
+
+  if (showGyms) {
+    mymap.removeLayer(gymLayers);
+    showGyms = false;
+  } else {
+    mymap.addLayer(gymLayers);
+    showGyms = true;
+  }
+}
+
+const gymButton = document.querySelector('#gym-toggle');
+gymButton.addEventListener('click', toggleGyms);

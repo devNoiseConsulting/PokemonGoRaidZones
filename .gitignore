@@ -59,4 +59,5 @@ typings/
 
 .cache/
 dist/
-config*js
+config.*js
+knownGyms.*js
