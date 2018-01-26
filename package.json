@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel index.html",
     "build": "parcel build index.html --public-url ./",
-    "hard-build": "parcel build index.html --public-url ./ --no-cache"
+    "hard-build": "parcel build index.html --public-url ./ --no-cache",
+    "gyms": "node bin/mkKnownGyms.js knownGyms.csv"
   },
   "repository": {
     "type": "git",
