@@ -1,12 +1,16 @@
 import config from './config';
 import knownGyms from './knownGyms';
+import s2Cells from './s2Cells';
+
 let showGyms = false;
+let showCells = false;
 
 let mymap = L.map('mapid', { zoomControl: false });
 new L.Control.Zoom({ position: 'bottomright' }).addTo(mymap);
 
 let zoneLayers = L.layerGroup();
 let gymLayers = L.layerGroup();
+let cellLayers = L.layerGroup();
 
 function resetMap() {
   mymap.setView(
@@ -45,19 +49,25 @@ let zoneSort = function(a, b) {
 };
 
 let drawArea = function(area) {
-  L.rectangle(area, {color: "#000", weight: 1, fillOpacity: 0.1}).addTo(mymap);
+  L.rectangle(area, { color: '#000', weight: 1, fillOpacity: 0.1 }).addTo(
+    mymap
+  );
 };
 
 let drawZones = function(zones, offset = 0) {
   removeZones();
 
   zones.sort(zoneSort).forEach(zone => {
-    let newLayer = L.circle(L.latLng(zone.lat, zone.lng), zone.radius + offset, {
-      opacity: 1,
-      weight: 1,
-      fillOpacity: 0.25,
-      color: zone.color
-    })
+    let newLayer = L.circle(
+      L.latLng(zone.lat, zone.lng),
+      zone.radius + offset,
+      {
+        opacity: 1,
+        weight: 1,
+        fillOpacity: 0.25,
+        color: zone.color
+      }
+    )
       .bindPopup(String(zone.text))
       .addTo(mymap);
     zoneLayers.addLayer(newLayer);
@@ -75,27 +85,59 @@ let removeGyms = function() {
 let drawGyms = function(gyms) {
   removeGyms();
 
-
-    var gymIcon = L.icon({
-        iconUrl: './dist/32e9ce835b73c2f75db766cd1a4babff.png',
-        iconSize: [25, 41],
-        iconAnchor: [13, 41],
-        popupAnchor: [0, -26]
-    });
+  var gymIcon = L.icon({
+    iconUrl: './dist/32e9ce835b73c2f75db766cd1a4babff.png',
+    iconSize: [25, 41],
+    iconAnchor: [13, 41],
+    popupAnchor: [0, -26]
+  });
 
   gyms.forEach(gym => {
-    let newLayer = L.marker([gym.lat, gym.lng], {icon: gymIcon})
-      .bindPopup(String(gym.name));
+    let newLayer = L.marker([gym.lat, gym.lng], { icon: gymIcon }).bindPopup(
+      String(gym.name)
+    );
     gymLayers.addLayer(newLayer);
   });
 
   //mymap.addLayer(gymLayers);
 };
 
+let removeCells = function() {
+  if (cellLayers) {
+    mymap.removeLayer(cellLayers);
+  }
+};
+
+let drawCells = function(cells) {
+  // removeCells();
+
+  cells.forEach(cell => {
+    var latlngs = cell.corners.reduce((acc, corner) => {
+      acc.push([parseFloat(corner.lat), parseFloat(corner.lng)]);
+      return acc;
+    }, []);
+    let newLayer = L.polygon(latlngs, {
+      opacity: 1,
+      weight: 1,
+      fillOpacity: 0.25,
+      color: '#9E9E9E'
+    });
+    cellLayers.addLayer(newLayer);
+  });
+
+  // mymap.addLayer(cellLayers);
+};
+
 // drawArea(config.area);
+drawCells(s2Cells);
 drawZones(config.zones);
 // drawZones(config.zones, -1000);
 drawGyms(knownGyms);
+
+const redrawZones = function() {
+  mymap.removeLayer(zoneLayers);
+  mymap.addLayer(zoneLayers);
+}
 
 const toggleGyms = function(e) {
   console.log('toggle gyms');
@@ -108,7 +150,25 @@ const toggleGyms = function(e) {
     mymap.addLayer(gymLayers);
     showGyms = true;
   }
-}
+};
+
+const toggleCells = function(e) {
+  console.log('toggle Cells');
+  e.preventDefault();
+
+  if (showCells) {
+    mymap.removeLayer(cellLayers);
+    showCells = false;
+  } else {
+    mymap.addLayer(cellLayers);
+    redrawZones();
+    showCells = true;
+  }
+};
+
 
 const gymButton = document.querySelector('#gym-toggle');
 gymButton.addEventListener('click', toggleGyms);
+
+const cellButton = document.querySelector('#cell-toggle');
+cellButton.addEventListener('click', toggleCells);

@@ -62,3 +62,5 @@ dist/
 config.*js
 knownGyms.*js
 knownGyms.*csv
+s2Cells.*js
+s2Cells.*csv
