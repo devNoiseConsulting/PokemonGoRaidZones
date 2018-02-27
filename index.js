@@ -2,6 +2,8 @@ import config from './config';
 import knownGyms from './knownGyms';
 import s2Cells from './s2Cells';
 
+let showZones = false;
+let showPolygons = false;
 let showGyms = false;
 let showCells = false;
 
@@ -9,6 +11,7 @@ let mymap = L.map('mapid', { zoomControl: false });
 new L.Control.Zoom({ position: 'bottomright' }).addTo(mymap);
 
 let zoneLayers = L.layerGroup();
+let polyLayers = L.layerGroup();
 let gymLayers = L.layerGroup();
 let cellLayers = L.layerGroup();
 
@@ -48,12 +51,6 @@ let zoneSort = function(a, b) {
   return b.radius - a.radius;
 };
 
-let drawArea = function(area) {
-  L.rectangle(area, { color: '#000', weight: 1, fillOpacity: 0.1 }).addTo(
-    mymap
-  );
-};
-
 let drawZones = function(zones, offset = 0) {
   removeZones();
 
@@ -64,16 +61,33 @@ let drawZones = function(zones, offset = 0) {
       {
         opacity: 1,
         weight: 1,
-        fillOpacity: 0.25,
+        fillOpacity: 0.4,
         color: zone.color
       }
     )
-      .bindPopup(String(zone.text))
-      .addTo(mymap);
+      .bindPopup(String(zone.text));
     zoneLayers.addLayer(newLayer);
   });
+};
 
-  mymap.addLayer(zoneLayers);
+let removePolygons = function() {
+  if (polyLayers) {
+    mymap.removeLayer(polyLayers);
+  }
+};
+
+let drawPolygons = function(polys) {
+  polys.forEach(p => {
+    let newLayer = L.polygon(p.points, {
+      opacity: 1,
+      weight: 1.5,
+      fillOpacity: 0.4,
+      color: p.color
+    })
+      .bindPopup(String(p.text))
+      .addTo(mymap);
+    polyLayers.addLayer(newLayer);
+  });
 };
 
 let removeGyms = function() {
@@ -128,16 +142,28 @@ let drawCells = function(cells) {
   // mymap.addLayer(cellLayers);
 };
 
-// drawArea(config.area);
 drawCells(s2Cells);
 drawZones(config.zones);
-// drawZones(config.zones, -1000);
+drawPolygons(config.polygons);
 drawGyms(knownGyms);
 
 const redrawZones = function() {
   mymap.removeLayer(zoneLayers);
   mymap.addLayer(zoneLayers);
-}
+};
+
+const toggleZones = function(e) {
+  console.log('toggle zones');
+  e.preventDefault();
+
+  if (showZones) {
+    mymap.removeLayer(zoneLayers);
+    showZones = false;
+  } else {
+    redrawZones();
+    showZones = true;
+  }
+};
 
 const toggleGyms = function(e) {
   console.log('toggle gyms');
@@ -166,6 +192,18 @@ const toggleCells = function(e) {
   }
 };
 
+const clickCoords = document.querySelector('#click-coords');
+const showCoords = function(e) {
+  var coord = e.latlng.toString().split(',');
+  var lat = coord[0].split('(');
+  var lng = coord[1].split(')');
+  clickCoords.innerText = `LatLng: ${lat[1].trim()}, ${lng[0].trim()}`;
+  console.log(`${lat[1].trim()}, ${lng[0].trim()}`);
+};
+mymap.on('mousemove', showCoords);
+
+const zoneButton = document.querySelector('#zone-toggle');
+zoneButton.addEventListener('click', toggleZones);
 
 const gymButton = document.querySelector('#gym-toggle');
 gymButton.addEventListener('click', toggleGyms);
