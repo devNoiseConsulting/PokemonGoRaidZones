@@ -5,6 +5,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
   <title>Pokemon Go Raid Zones</title>
   <!-- Bootstrap -->
   <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -36,10 +40,11 @@
           <li id="zone-toggle" class=""><a href="#">Zones</a></li>
           <li id="gym-toggle" class=""><a href="#">Gyms</a></li>
           <li id="cell-toggle" class=""><a href="#">S2 Cells</a></li>
-          <li class=""><a href="#" id="click-coords" ></a></li>
+          <li class=""><a href="#" id="click-coords"></a></li>
         </ul>
-      </div><!-- /.navbar-collapse -->
-    <!-- /.container-fluid -->
+      </div>
+      <!-- /.navbar-collapse -->
+      <!-- /.container-fluid -->
   </nav>
 
   <div class="box">
@@ -49,6 +54,19 @@
   <script src="./node_modules/bootstrap.native/dist/bootstrap-native.min.js"></script>
   <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="./index.js"></script>
+  <script>
+    (function(a, b, c) {
+      if (c in b && b[c]) {
+        var d, e = a.location,
+          f = /^(a|html)$/i;
+        a.addEventListener("click", function(a) {
+          d = a.target;
+          while (!f.test(d.nodeName)) d = d.parentNode;
+          "href" in d && (d.href.indexOf("http") || ~d.href.indexOf(e.host)) && (a.preventDefault(), e.href = d.href)
+        }, !1)
+      }
+    })(document, window.navigator, "standalone")
+  </script>
 </body>
 
 </html>
